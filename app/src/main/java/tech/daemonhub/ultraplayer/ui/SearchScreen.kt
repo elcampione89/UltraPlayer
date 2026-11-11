@@ -88,14 +88,14 @@ fun SearchScreen() {
                         modifier = Modifier.padding(top = 12.dp, bottom = 4.dp)
                     )
                 }
-                items(list) { it ->
+                items(list) { res ->
                     FocusBox(
                         onClick = {
-                            if (it.kind == Kind.LIVE) {
+                            if (res.kind == Kind.LIVE) {
                                 val login = Prefs.login ?: return@FocusBox
-                                PlayerActivity.start(context, PlayRequest(Xtream.liveUrl(login, it), it.name, PlayRequest.TYPE_LIVE,
-                                    liveCategoryId = it.categoryId, liveItemId = it.id))
-                            } else opened = it
+                                PlayerActivity.start(context, PlayRequest(Xtream.liveUrl(login, res), res.name, PlayRequest.TYPE_LIVE,
+                                    liveCategoryId = res.categoryId, liveItemId = res.id))
+                            } else opened = res
                         },
                         modifier = Modifier.fillMaxWidth(),
                         focusedScale = 1.01f,
@@ -103,11 +103,11 @@ fun SearchScreen() {
                     ) {
                         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                             AsyncImage(
-                                it.icon, null, contentScale = ContentScale.Fit,
+                                res.icon, null, contentScale = ContentScale.Fit,
                                 modifier = Modifier.size(width = 48.dp, height = 48.dp).clip(RoundedCornerShape(6.dp)).background(Color(0xFF221B33))
                             )
                             Spacer(Modifier.width(12.dp))
-                            Text(it.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            Text(res.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
                         }
                     }
                 }
