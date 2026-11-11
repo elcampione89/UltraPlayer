@@ -21,9 +21,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -52,7 +52,25 @@ jobs:
           EXTRA=""
           [ -n "${{ github.event.inputs.version_code }}" ] && EXTRA="$EXTRA -PAPP_VERSION_CODE=${{ github.event.inputs.version_code }}"
           [ -n "${{ github.event.inputs.version_name }}" ] && EXTRA="$EXTRA -PAPP_VERSION_NAME=${{ github.event.inputs.version_name }}"
-          ./gradlew --no-daemon --stacktrace assembleRelease $EXTRA
+          set -o pipefail
+          ./gradlew --no-daemon assembleRelease $EXTRA 2>&1 | tee build.log
+
+      - name: Report build errors
+        if: failure()
+        run: |
+          # Compiler errors as annotations (readable without log access) ...
+          grep -E '^e: |error:|What went wrong' -A3 build.log | head -200 > errors.txt || true
+          grep -E '^e: ' build.log | head -40 | while IFS= read -r line; do echo "::error::$line"; done
+          grep -E 'What went wrong' -A6 build.log | head -20 | while IFS= read -r line; do echo "::error::$line"; done
+          # ... and the full error list on a ci-logs branch
+          git config user.name "ci"; git config user.email "ci@localhost"
+          git checkout --orphan ci-logs
+          git rm -rfq . >/dev/null 2>&1 || true
+          cp errors.txt errors-${{ github.run_number }}.txt
+          tail -300 build.log > build-tail-${{ github.run_number }}.txt
+          git add errors-*.txt build-tail-*.txt
+          git commit -qm "build ${{ github.run_number }} errors"
+          git push -f origin ci-logs
 
       - name: Collect APKs
         id: apks
