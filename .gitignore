@@ -1,0 +1,12 @@
+*.apk
+*.aab
+build/
+app/build/
+.gradle/
+.kotlin/
+local.properties
+.idea/
+*.iml
+*.jks
+*.keystore
+.DS_Store
