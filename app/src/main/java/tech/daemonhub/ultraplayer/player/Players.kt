@@ -17,7 +17,11 @@ object Players {
             .setAllowCrossProtocolRedirects(true)
             .setConnectTimeoutMs(15_000)
             .setReadTimeoutMs(30_000)
-        val renderers = DefaultRenderersFactory(context).setEnableDecoderFallback(true)
+        // FFmpeg audio decoder as a fallback: plays AC3/E-AC3/DTS/TrueHD on devices that can't
+        // (e.g. Plex films showing "Audio: None"), while the device still decodes what it can.
+        val renderers = DefaultRenderersFactory(context)
+            .setEnableDecoderFallback(true)
+            .setExtensionRendererMode(DefaultRenderersFactory.EXTENSION_RENDERER_MODE_ON)
         return ExoPlayer.Builder(context, renderers)
             .setMediaSourceFactory(DefaultMediaSourceFactory(context).setDataSourceFactory(http))
             .build()
