@@ -112,9 +112,10 @@ fun LiveScreen() {
     DisposableEffect(Unit) { onDispose { preview.release() } }
     LifecycleResume { resumeTick++ }
     LaunchedEffect(focusedChannel?.id, resumeTick) {
+        preview.stop()
+        preview.clearMediaItems()
         val ch = focusedChannel ?: return@LaunchedEffect
         val login = Prefs.login ?: return@LaunchedEffect
-        preview.stop()
         delay(900) // only start once the remote has settled on a channel
         preview.setMediaItem(MediaItem.fromUri(Xtream.liveUrl(login, ch)))
         preview.prepare()

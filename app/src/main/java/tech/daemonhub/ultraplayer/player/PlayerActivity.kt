@@ -294,6 +294,8 @@ class PlayerActivity : ComponentActivity() {
         val item = liveList[liveIndex]
         showBanner(item.name, item)
         retried = false
+        // Cut the old channel straight away so its sound doesn't carry on under the new one
+        player?.stop()
         // Short delay so fast presses skip channels without starting each stream
         zapJob?.cancel()
         zapJob = lifecycleScope.launch {
