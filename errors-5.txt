@@ -1,0 +1,15 @@
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:195:32 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:196:17 Unresolved reference 'launch'.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:197:53 Suspension functions can only be called within coroutine body.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:199:29 Suspension functions can only be called within coroutine body.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:207:18 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:207:26 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:207:31 Unresolved reference 'cancel'.
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1794431491460.json
+
+FAILURE: Build failed with an exception.
+--
+* What went wrong:
+Execution failed for task ':app:compileReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details

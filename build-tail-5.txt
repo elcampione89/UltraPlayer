@@ -1,0 +1,72 @@
+To honour the JVM settings for this build a single-use Daemon process will be forked. For more on this, please refer to https://docs.gradle.org/8.13/userguide/gradle_daemon.html#sec:disabling_the_daemon in the Gradle documentation.
+Daemon will be stopped at the end of the build 
+> Task :app:preBuild UP-TO-DATE
+> Task :app:preReleaseBuild UP-TO-DATE
+> Task :app:mergeReleaseJniLibFolders
+> Task :app:mergeReleaseNativeLibs
+> Task :app:buildKotlinToolingMetadata
+
+> Task :app:stripReleaseDebugSymbols
+Unable to strip the following libraries, packaging them as they are: libandroidx.graphics.path.so. Run with --info option to learn more.
+
+> Task :app:checkKotlinGradlePluginConfigurationErrors SKIPPED
+> Task :app:extractReleaseNativeSymbolTables
+> Task :app:generateReleaseBuildConfig
+> Task :app:mergeReleaseNativeDebugMetadata NO-SOURCE
+> Task :app:checkReleaseDuplicateClasses
+> Task :app:checkReleaseAarMetadata
+> Task :app:processReleaseNavigationResources
+> Task :app:generateReleaseResValues
+> Task :app:compileReleaseNavigationResources
+> Task :app:mapReleaseSourceSetPaths
+> Task :app:generateReleaseResources
+> Task :app:packageReleaseResources
+> Task :app:mergeReleaseResources
+> Task :app:createReleaseCompatibleScreenManifests
+> Task :app:extractDeepLinksRelease
+> Task :app:parseReleaseLocalResources
+> Task :app:processReleaseMainManifest
+> Task :app:processReleaseManifest
+> Task :app:processReleaseManifestForPackage
+> Task :app:javaPreCompileRelease
+> Task :app:extractProguardFiles
+> Task :app:mergeReleaseArtProfile
+> Task :app:mergeReleaseStartupProfile
+> Task :app:mergeReleaseShaders
+> Task :app:compileReleaseShaders NO-SOURCE
+> Task :app:generateReleaseAssets UP-TO-DATE
+> Task :app:mergeReleaseAssets
+> Task :app:compressReleaseAssets
+> Task :app:extractReleaseVersionControlInfo
+> Task :app:collectReleaseDependencies
+> Task :app:processReleaseResources
+> Task :app:sdkReleaseDependencyData
+> Task :app:validateSigningRelease
+> Task :app:writeReleaseAppMetadata
+> Task :app:writeReleaseSigningConfigVersions
+
+> Task :app:compileReleaseKotlin FAILED
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:195:32 Cannot infer type for type parameter 'R'. Specify it explicitly.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:196:17 Unresolved reference 'launch'.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:197:53 Suspension functions can only be called within coroutine body.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:199:29 Suspension functions can only be called within coroutine body.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:207:18 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:207:26 Cannot infer type for type parameter 'T'. Specify it explicitly.
+e: file:///home/runner/work/UltraPlayer/UltraPlayer/app/src/main/java/tech/daemonhub/ultraplayer/plex/PlexApi.kt:207:31 Unresolved reference 'cancel'.
+gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run_2-1794431491460.json
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':app:compileReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 40s
+36 actionable tasks: 36 executed
