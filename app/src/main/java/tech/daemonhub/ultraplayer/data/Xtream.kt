@@ -161,6 +161,7 @@ object Xtream {
                 var ext: String? = null
                 var rating: String? = null
                 var num = 0
+                var added = 0L
                 while (hasNext()) {
                     when (nextName()) {
                         "stream_id", "series_id" -> id = anyString()
@@ -170,11 +171,12 @@ object Xtream {
                         "container_extension" -> ext = anyString()
                         "rating" -> rating = anyString()
                         "num" -> num = anyString()?.toIntOrNull() ?: 0
+                        "added", "last_modified" -> added = anyString()?.toLongOrNull() ?: 0L
                         else -> skipValue()
                     }
                 }
                 if (id != null) {
-                    out += Item(kind, id!!, name?.trim() ?: "", icon?.takeIf { it.isNotBlank() }, cat ?: "", ext, rating, num = num)
+                    out += Item(kind, id!!, name?.trim() ?: "", icon?.takeIf { it.isNotBlank() }, cat ?: "", ext, rating, num = num, added = added)
                 }
             }
             out

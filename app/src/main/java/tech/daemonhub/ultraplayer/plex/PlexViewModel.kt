@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import tech.daemonhub.ultraplayer.player.PlayRequest
 import tech.daemonhub.ultraplayer.player.PlayerActivity
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -71,6 +72,17 @@ class PlexViewModel(app: Application) : AndroidViewModel(app) {
         if (token == null) { stage = PlexStage.SignedOut; return }
         stage = PlexStage.Loading
         viewModelScope.launch {
+            // Fast path: reopen last time's server straight away; the server list loads in the background
+            val last = PlexApi.resumeLastSession(ctx)
+            if (last != null) {
+                try {
+                    openSession(last)
+                    launch { servers = runCatching { PlexApi.servers(ctx, token) }.getOrDefault(servers) }
+                    return@launch
+                } catch (e: PlexAuthException) {
+                    signOut(); return@launch
+                } catch (_: Exception) { /* fall through to the full flow */ }
+            }
             try {
                 servers = PlexApi.servers(ctx, token)
                 when {
@@ -118,19 +130,22 @@ class PlexViewModel(app: Application) : AndroidViewModel(app) {
 
     fun showServerPicker() { if (servers.isNotEmpty()) stage = PlexStage.PickServer(servers) else start() }
 
+    private suspend fun openSession(s: PlexSession) {
+        PlexApi.activeSession = s
+        session = s
+        libraries = PlexApi.libraries(ctx, s)
+        detailStack = emptyList()
+        searchResults = null
+        selectLibrary(null)
+        stage = PlexStage.Browsing
+    }
+
     fun openServer(server: PlexServer) {
         stage = PlexStage.Loading
         viewModelScope.launch {
             try {
-                val s = PlexApi.connect(ctx, server)
                 PlexApi.saveServerId(ctx, server.clientId)
-                PlexApi.activeSession = s
-                session = s
-                libraries = PlexApi.libraries(ctx, s)
-                detailStack = emptyList()
-                searchResults = null
-                selectLibrary(null)
-                stage = PlexStage.Browsing
+                openSession(PlexApi.connect(ctx, server))
             } catch (e: PlexAuthException) {
                 signOut()
             } catch (e: Exception) {
@@ -156,13 +171,12 @@ class PlexViewModel(app: Application) : AndroidViewModel(app) {
         detailStack = emptyList()
         if (lib == null) {
             viewModelScope.launch {
+                // All rows at once instead of one after another
+                val deck = async { runCatching { PlexApi.onDeck(ctx, s) }.getOrNull() }
+                val recents = libraries.map { l -> l to async { runCatching { PlexApi.recentlyAdded(ctx, s, l.key) }.getOrNull() } }
                 val rows = mutableListOf<PlexRow>()
-                runCatching { PlexApi.onDeck(ctx, s) }.getOrNull()?.takeIf { it.isNotEmpty() }
-                    ?.let { rows += PlexRow("Continue watching", it) }
-                for (l in libraries) {
-                    runCatching { PlexApi.recentlyAdded(ctx, s, l.key) }.getOrNull()?.takeIf { it.isNotEmpty() }
-                        ?.let { rows += PlexRow("Recently added · ${l.title}", it) }
-                }
+                deck.await()?.takeIf { it.isNotEmpty() }?.let { rows += PlexRow("Continue watching", it) }
+                for ((l, d) in recents) d.await()?.takeIf { it.isNotEmpty() }?.let { rows += PlexRow("Recently added · ${l.title}", it) }
                 homeRows = rows
             }
         } else {

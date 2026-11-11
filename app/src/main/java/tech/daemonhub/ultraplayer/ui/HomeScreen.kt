@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LiveTv
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Search
@@ -50,6 +51,7 @@ import tech.daemonhub.ultraplayer.panel.PanelClient
 import tech.daemonhub.ultraplayer.plex.PlexScreen
 
 private enum class Tab(val label: String, val icon: ImageVector) {
+    HOME("Home", Icons.Default.Home),
     LIVE("Live TV", Icons.Default.LiveTv),
     MOVIES("Films", Icons.Default.Movie),
     SERIES("Series", Icons.Default.Tv),
@@ -61,9 +63,9 @@ private enum class Tab(val label: String, val icon: ImageVector) {
 @Composable
 fun HomeScreen(onLogout: () -> Unit) {
     val cfg by PanelClient.config.collectAsState()
-    var tab by rememberSaveable { mutableStateOf(Tab.LIVE) }
+    var tab by rememberSaveable { mutableStateOf(Tab.HOME) }
     val tabs = Tab.values().filter { it != Tab.PLEX || cfg.plexEnabled }
-    if (tab !in tabs) tab = Tab.LIVE
+    if (tab !in tabs) tab = Tab.HOME
 
     var railHasFocus by remember { mutableStateOf(true) }
     val railFocus = remember { FocusRequester() }
@@ -77,7 +79,7 @@ fun HomeScreen(onLogout: () -> Unit) {
             Modifier
                 .width(180.dp)
                 .fillMaxHeight()
-                .background(Rail)
+                .background(androidx.compose.ui.graphics.Brush.verticalGradient(listOf(Rail, Bg)))
                 .padding(vertical = 20.dp, horizontal = 12.dp)
                 .onFocusChanged { railHasFocus = it.hasFocus },
             verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -106,8 +108,12 @@ fun HomeScreen(onLogout: () -> Unit) {
                 }
             }
         }
-        Box(Modifier.weight(1f).fillMaxHeight()) {
+        Box(
+            Modifier.weight(1f).fillMaxHeight()
+                .background(androidx.compose.ui.graphics.Brush.radialGradient(listOf(SelectedBg.copy(alpha = 0.35f), Bg), radius = 1400f))
+        ) {
             when (tab) {
+                Tab.HOME -> HomeTab()
                 Tab.LIVE -> LiveScreen()
                 Tab.MOVIES -> VodScreen(Kind.MOVIE)
                 Tab.SERIES -> VodScreen(Kind.SERIES)
@@ -134,6 +140,30 @@ fun CenterMessage(text: String, sub: String? = null, actionLabel: String? = null
                 Spacer(Modifier.height(16.dp))
                 Chip(actionLabel, false, onClick = onAction)
             }
+        }
+    }
+}
+
+/** Screen title on the left, live clock on the right. */
+@Composable
+fun ScreenHeader(title: String, subtitle: String? = null) {
+    var now by remember { mutableStateOf(System.currentTimeMillis()) }
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(15_000)
+            now = System.currentTimeMillis()
+        }
+    }
+    val fmt = remember { java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault()) }
+    val dayFmt = remember { java.text.SimpleDateFormat("EEE d MMM", java.util.Locale.getDefault()) }
+    Row(Modifier.fillMaxWidth().padding(start = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Column(Modifier.weight(1f)) {
+            Text(title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+            if (subtitle != null) Text(subtitle, color = Muted, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+        }
+        Column(horizontalAlignment = Alignment.End) {
+            Text(fmt.format(java.util.Date(now)), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text(dayFmt.format(java.util.Date(now)), color = Muted, style = MaterialTheme.typography.labelMedium)
         }
     }
 }

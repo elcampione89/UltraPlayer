@@ -122,9 +122,15 @@ fun VodScreen(kind: Kind) {
     val items = remember(selectedCat, favVersion, state, refreshTick) { Catalog.itemsIn(kind, selectedCat) }
     val gridState = remember(selectedCat) { LazyGridState() }
 
-    Row(Modifier.fillMaxSize().padding(top = 20.dp, bottom = 20.dp, end = 12.dp)) {
+    Column(Modifier.fillMaxSize().padding(top = 16.dp, bottom = 16.dp, end = 12.dp)) {
+    ScreenHeader(
+        if (kind == Kind.MOVIE) "Films" else "Series",
+        categories.firstOrNull { it.id == selectedCat }?.name?.let { "$it · ${items.size} titles" }
+    )
+    Spacer(Modifier.height(10.dp))
+    Row(Modifier.fillMaxSize()) {
         LazyColumn(
-            Modifier.width(230.dp).fillMaxHeight(),
+            Modifier.width(210.dp).fillMaxHeight(),
             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
@@ -137,14 +143,14 @@ fun VodScreen(kind: Kind) {
                     focusedScale = 1.02f
                 ) {
                     Text(
-                        c.name, Modifier.padding(horizontal = 14.dp, vertical = 11.dp), maxLines = 1,
+                        c.name, Modifier.padding(horizontal = 12.dp, vertical = 8.dp), maxLines = 1, style = MaterialTheme.typography.bodyMedium,
                         overflow = TextOverflow.Ellipsis, fontWeight = if (c.id == selectedCat) FontWeight.Bold else FontWeight.Normal
                     )
                 }
             }
         }
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(128.dp),
+            columns = GridCells.Adaptive(116.dp),
             state = gridState,
             modifier = Modifier.weight(1f).fillMaxHeight(),
             contentPadding = PaddingValues(12.dp),
@@ -155,6 +161,7 @@ fun VodScreen(kind: Kind) {
                 Poster(item, onClick = { openItem = item })
             }
         }
+    }
     }
 }
 

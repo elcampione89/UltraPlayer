@@ -93,7 +93,7 @@ object PlexApi {
 
     fun saveUserToken(context: Context, token: String?) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().apply {
-            if (token == null) remove("user_token").remove("server_id") else putString("user_token", token)
+            if (token == null) remove("user_token").remove("server_id").remove("last_session") else putString("user_token", token)
         }.apply()
     }
 
@@ -174,21 +174,57 @@ object PlexApi {
         out.sortedWith(compareByDescending<PlexServer> { it.owned }.thenBy { it.name.lowercase() })
     }
 
-    /** Tries local, then remote, then relay connections and returns the first that answers. */
+    private fun probe(context: Context, base: String, token: String): Boolean =
+        runCatching { getJson(context, "$base/identity", token, probeClient); true }.getOrDefault(false)
+
+    /**
+     * Finds a working address for the server. The last one that worked is tried first (instant);
+     * otherwise every address is tried at the same time and the first to answer wins, instead of
+     * waiting out each dead local/IPv6 address in turn (which took minutes away from home).
+     */
     suspend fun connect(context: Context, server: PlexServer): PlexSession = withContext(Dispatchers.IO) {
-        val ordered = server.connections.sortedBy { c ->
-            when {
-                c.local && !c.relay -> 0
-                !c.relay -> 1
-                else -> 2
+        val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        val cachedUri = prefs.getString("conn_${server.clientId}", null)
+        if (cachedUri != null && probe(context, cachedUri, server.accessToken)) {
+            return@withContext PlexSession(server.name, cachedUri, server.accessToken).also { saveLastSession(context, server.clientId, it) }
+        }
+        // Relay last: it's slow and capped, so give direct addresses a head start
+        val ordered = server.connections.sortedBy { c -> if (c.relay) 1 else 0 }
+        val results = kotlinx.coroutines.channels.Channel<String?>(ordered.size.coerceAtLeast(1))
+        val winner = kotlinx.coroutines.coroutineScope {
+            val jobs = ordered.map { c ->
+                launch {
+                    if (c.relay) kotlinx.coroutines.delay(1500)
+                    val base = c.uri.trimEnd('/')
+                    results.send(if (probe(context, base, server.accessToken)) base else null)
+                }
             }
-        }
-        for (c in ordered) {
-            val base = c.uri.trimEnd('/')
-            val ok = runCatching { getJson(context, "$base/identity", server.accessToken, probeClient); true }.getOrDefault(false)
-            if (ok) return@withContext PlexSession(server.name, base, server.accessToken)
-        }
-        throw java.io.IOException("Couldn't reach ${server.name}. Is the server online and remote access on?")
+            var found: String? = null
+            for (n in ordered.indices) {
+                val r = kotlinx.coroutines.withTimeoutOrNull(12_000) { results.receive() }
+                if (r != null) { found = r; break }
+            }
+            jobs.forEach { it.cancel() }
+            found
+        } ?: throw java.io.IOException("Couldn't reach ${server.name}. Is the server online and remote access on?")
+        prefs.edit().putString("conn_${server.clientId}", winner).apply()
+        PlexSession(server.name, winner, server.accessToken).also { saveLastSession(context, server.clientId, it) }
+    }
+
+    // ---------- instant start ----------
+    private fun saveLastSession(context: Context, serverId: String, s: PlexSession) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit()
+            .putString("last_session", listOf(serverId, s.baseUrl, s.token, s.serverName).joinToString("\u0001"))
+            .apply()
+    }
+
+    /** The server we used last time, if it still answers. Lets the Plex tab open without asking plex.tv first. */
+    suspend fun resumeLastSession(context: Context): PlexSession? = withContext(Dispatchers.IO) {
+        val raw = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).getString("last_session", null) ?: return@withContext null
+        val p = raw.split("\u0001")
+        if (p.size < 4 || p[0] != savedServerId(context)) return@withContext null
+        val s = PlexSession(p[3], p[1], p[2])
+        if (probe(context, s.baseUrl, s.token)) s else null
     }
 
     // ---------- library ----------

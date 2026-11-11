@@ -18,6 +18,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.compose.ui.graphics.toArgb
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -153,7 +154,10 @@ class PlayerActivity : ComponentActivity() {
             setPadding(dp(24), dp(16), dp(24), dp(16))
             background = GradientDrawable().apply {
                 cornerRadius = dp(20).toFloat()
-                setColor(Color.argb(215, 20, 12, 40))
+                // Follows the app theme
+                val c = tech.daemonhub.ultraplayer.ui.Themes.current.rail.toArgb()
+                setColor(Color.argb(225, Color.red(c), Color.green(c), Color.blue(c)))
+                setStroke(dp(2), tech.daemonhub.ultraplayer.ui.Themes.current.focus.toArgb())
             }
             visibility = View.GONE
         }
@@ -163,7 +167,7 @@ class PlayerActivity : ComponentActivity() {
             typeface = Typeface.DEFAULT_BOLD
         }
         bannerEpg = TextView(this).apply {
-            setTextColor(Color.rgb(0xD9, 0xC8, 0xFF))
+            setTextColor(tech.daemonhub.ultraplayer.ui.Themes.current.accent.toArgb())
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             setPadding(0, dp(6), 0, 0)
         }
@@ -203,15 +207,7 @@ class PlayerActivity : ComponentActivity() {
 
     // ---------------- player ----------------
     private fun createPlayer() {
-        val http = DefaultHttpDataSource.Factory()
-            .setUserAgent(Xtream.USER_AGENT)
-            .setAllowCrossProtocolRedirects(true)
-            .setConnectTimeoutMs(15_000)
-            .setReadTimeoutMs(30_000)
-        val renderers = DefaultRenderersFactory(this).setEnableDecoderFallback(true)
-        player = ExoPlayer.Builder(this, renderers)
-            .setMediaSourceFactory(DefaultMediaSourceFactory(this).setDataSourceFactory(http))
-            .build().also { p ->
+        player = Players.create(this).also { p ->
                 p.playWhenReady = true
                 p.addListener(object : Player.Listener {
                     override fun onPlayerError(error: PlaybackException) = handleError(error)

@@ -113,6 +113,14 @@ object Catalog {
         }
     }
 
+    /** Newest items (by the provider's "added" date), skipping categories the panel hides. */
+    fun recentlyAdded(kind: Kind, limit: Int = 30): List<Item> {
+        val s = section(kind) ?: return emptyList()
+        val hidden = s.categories.filter { CategoryRules.isHidden(it.name) }.mapTo(HashSet()) { it.id }
+        return s.byId.values.asSequence().filter { it.added > 0 && it.categoryId !in hidden }
+            .sortedByDescending { it.added }.take(limit).toList()
+    }
+
     /** Simple in-memory search across whatever has been loaded. */
     fun search(query: String, limitPerKind: Int = 60): Map<Kind, List<Item>> {
         val q = query.trim()

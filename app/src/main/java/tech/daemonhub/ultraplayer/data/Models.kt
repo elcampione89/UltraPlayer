@@ -14,7 +14,8 @@ data class Item(
     val ext: String? = null,       // container extension for films
     val rating: String? = null,
     val directUrl: String? = null, // M3U playlists give the URL directly
-    val num: Int = 0               // channel number from the provider
+    val num: Int = 0,              // channel number from the provider
+    val added: Long = 0            // when the provider added it (seconds), for "Recently added"
 ) {
     val favKind: String get() = kind.name.lowercase()
 }
