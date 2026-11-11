@@ -181,6 +181,8 @@ if ($action !== '') {
             $d['settings']['allow_custom_dns'] = !empty($_POST['allow_custom_dns']);
             $d['settings']['allow_m3u'] = !empty($_POST['allow_m3u']);
             $d['settings']['plex_enabled'] = !empty($_POST['plex_enabled']);
+            $d['settings']['theme'] = in_array($_POST['theme'] ?? '', ['purple', 'gold', 'red', 'blue'], true) ? $_POST['theme'] : 'purple';
+            $d['settings']['allow_theme_change'] = !empty($_POST['allow_theme_change']);
             save_data($d); $flash = 'Settings saved.';
             break;
         case 'categories_save':
@@ -338,6 +340,13 @@ render_header($tabs[$tab]);
             <label class="check"><input type="checkbox" name="allow_custom_dns" value="1" <?= $s['allow_custom_dns'] ? 'checked' : '' ?>> Let users type their own server URL</label>
             <label class="check"><input type="checkbox" name="allow_m3u" value="1" <?= $s['allow_m3u'] ? 'checked' : '' ?>> Allow M3U playlist login</label>
             <label class="check"><input type="checkbox" name="plex_enabled" value="1" <?= $s['plex_enabled'] ? 'checked' : '' ?>> Show the Plex tab</label>
+            <label>App theme
+                <select name="theme" style="display:block;width:100%;margin-top:4px;padding:11px 12px;background:#14121a;border:1px solid var(--line);border-radius:12px;color:var(--txt);font:inherit">
+                    <?php foreach (['purple' => 'Purple', 'gold' => 'Black & gold', 'red' => 'Black & red', 'blue' => 'Navy & cyan'] as $k => $v): ?>
+                    <option value="<?= $k ?>" <?= ($s['theme'] ?? 'purple') === $k ? 'selected' : '' ?>><?= h($v) ?></option>
+                    <?php endforeach; ?>
+                </select></label>
+            <label class="check"><input type="checkbox" name="allow_theme_change" value="1" <?= !empty($s['allow_theme_change']) ? 'checked' : '' ?>> Let users choose their own theme in the app</label>
             <button>Save settings</button>
         </form>
     </div>

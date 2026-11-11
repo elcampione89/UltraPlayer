@@ -161,7 +161,7 @@ fun LiveScreen() {
                             model = ch.icon,
                             contentDescription = null,
                             contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(width = 56.dp, height = 36.dp).clip(RoundedCornerShape(6.dp)).background(Color1)
+                            modifier = Modifier.size(width = 56.dp, height = 36.dp).clip(RoundedCornerShape(6.dp)).background(Tile)
                         )
                         Spacer(Modifier.width(12.dp))
                         Text(ch.name, Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -187,7 +187,6 @@ fun LiveScreen() {
     }
 }
 
-private val Color1 = androidx.compose.ui.graphics.Color(0xFF221B33)
 
 @Composable
 private fun ChannelInfo(ch: Item) {
@@ -199,7 +198,7 @@ private fun ChannelInfo(ch: Item) {
     }
     AsyncImage(
         model = ch.icon, contentDescription = null, contentScale = ContentScale.Fit,
-        modifier = Modifier.fillMaxWidth().height(110.dp).clip(RoundedCornerShape(12.dp)).background(Color1)
+        modifier = Modifier.fillMaxWidth().height(110.dp).clip(RoundedCornerShape(12.dp)).background(Tile)
     )
     Spacer(Modifier.height(12.dp))
     Text(ch.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, maxLines = 2)

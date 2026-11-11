@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Dns
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.SystemUpdate
@@ -70,6 +71,14 @@ fun SettingsScreen(onLogout: () -> Unit) {
         Spacer(Modifier.width(4.dp))
         SettingRow(Icons.Default.Dns, "Server", serverName) {}
         if (login?.isXtream == true) SettingRow(Icons.Default.Person, "Account", login?.username ?: "") {}
+        if (cfg.allowThemeChange) {
+            val current = Themes.current
+            SettingRow(Icons.Default.Palette, "Theme: ${current.label}", "Press OK to switch look") {
+                val all = Themes.all
+                val next = all[(all.indexOfFirst { it.id == current.id } + 1) % all.size]
+                Themes.choose(next.id)
+            }
+        }
         SettingRow(Icons.Default.Refresh, "Refresh channels, films and series", "Downloads fresh lists from your provider") {
             Xtream.clearCache()
             Catalog.reset()

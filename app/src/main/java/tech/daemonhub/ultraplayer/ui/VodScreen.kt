@@ -70,7 +70,6 @@ import tech.daemonhub.ultraplayer.data.Xtream
 import tech.daemonhub.ultraplayer.player.PlayRequest
 import tech.daemonhub.ultraplayer.player.PlayerActivity
 
-private val Tile = Color(0xFF221B33)
 
 /** Films or Series: categories on the left, posters on the right, details on OK. */
 @Composable
@@ -171,7 +170,7 @@ private fun Poster(item: Item, onClick: () -> Unit) {
         },
         modifier = Modifier.fillMaxWidth(),
         focusedScale = 1.07f,
-        focusedColor = Tile
+        color = Tile
     ) { focused ->
         Column {
             AsyncImage(

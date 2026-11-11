@@ -142,7 +142,7 @@ fun LoginScreen(onLoggedIn: () -> Unit) {
                     onClick = { if (!busy) submit() },
                     modifier = Modifier.fillMaxWidth().height(56.dp),
                     color = MaterialTheme.colorScheme.primary,
-                    focusedColor = Lavender,
+                    focusedColor = FocusBg,
                     shape = RoundedCornerShape(28.dp)
                 ) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -162,7 +162,6 @@ fun Chip(text: String, selected: Boolean, modifier: Modifier = Modifier, onClick
         modifier = modifier,
         selected = selected,
         color = Panel,
-        selectedColor = MaterialTheme.colorScheme.primaryContainer,
         shape = RoundedCornerShape(20.dp)
     ) {
         Text(text, Modifier.padding(horizontal = 16.dp, vertical = 10.dp), fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal)

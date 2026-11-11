@@ -55,7 +55,9 @@ data class PanelConfig(
     val catBottom: List<String> = listOf("24/7"),
     val catHide: List<String> = emptyList(),
     val catHideUnlisted: Boolean = false,
-    val catSortAz: Boolean = false
+    val catSortAz: Boolean = false,
+    val theme: String = "purple",
+    val allowThemeChange: Boolean = true
 ) {
     companion object {
         val DEFAULT = PanelConfig("Ultra Player", true, true, true, emptyList(), null, emptyList())
@@ -107,7 +109,9 @@ data class PanelConfig(
                 catBottom = strList("bottom", listOf("24/7")),
                 catHide = strList("hide", emptyList()),
                 catHideUnlisted = cats?.optBoolean("hide_unlisted", false) ?: false,
-                catSortAz = cats?.optString("sort") == "az"
+                catSortAz = cats?.optString("sort") == "az",
+                theme = j.optString("theme", "purple").ifBlank { "purple" },
+                allowThemeChange = j.optBoolean("allow_theme_change", true)
             )
         }
     }

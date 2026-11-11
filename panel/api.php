@@ -31,6 +31,8 @@ echo json_encode([
     'allow_custom_dns' => (bool)$d['settings']['allow_custom_dns'],
     'allow_m3u' => (bool)$d['settings']['allow_m3u'],
     'plex_enabled' => (bool)$d['settings']['plex_enabled'],
+    'theme' => (string)$d['settings']['theme'],
+    'allow_theme_change' => (bool)$d['settings']['allow_theme_change'],
     'dns' => $dns,
     'update' => [
         'version_code' => (int)$d['update']['version_code'],

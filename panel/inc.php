@@ -31,6 +31,8 @@ function default_data(): array {
             'allow_custom_dns' => true,
             'allow_m3u' => true,
             'plex_enabled' => true,
+            'theme' => 'purple',          // Ultra Player default look
+            'allow_theme_change' => true, // let users pick their own in Settings
         ],
         'dns' => [],          // [{id, name, url}]
         'update' => [

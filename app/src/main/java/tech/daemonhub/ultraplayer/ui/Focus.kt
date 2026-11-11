@@ -44,8 +44,8 @@ fun FocusBox(
     shape: Shape = RoundedCornerShape(14.dp),
     focusedScale: Float = 1.04f,
     color: Color = Color.Transparent,
-    focusedColor: Color = PanelHigh,
-    selectedColor: Color = Color(0xFF2D2147),
+    focusedColor: Color = FocusBg,
+    selectedColor: Color = SelectedBg,
     borderWidth: Dp = 3.dp,
     content: @Composable BoxScope.(focused: Boolean) -> Unit
 ) {
@@ -69,7 +69,12 @@ fun FocusBox(
             .then(if (focused) Modifier.border(borderWidth, Color.White, shape) else Modifier)
             .clickable(interactionSource = interaction, indication = null, onClick = onClick)
     ) {
-        content(focused)
+        // White text on highlighted items; normal text otherwise
+        androidx.compose.runtime.CompositionLocalProvider(
+            androidx.compose.material3.LocalContentColor provides if (focused || selected) Color.White else TextMain
+        ) {
+            content(focused)
+        }
     }
 }
 

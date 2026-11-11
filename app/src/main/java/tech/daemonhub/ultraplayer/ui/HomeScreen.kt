@@ -77,7 +77,7 @@ fun HomeScreen(onLogout: () -> Unit) {
             Modifier
                 .width(180.dp)
                 .fillMaxHeight()
-                .background(Color0)
+                .background(Rail)
                 .padding(vertical = 20.dp, horizontal = 12.dp)
                 .onFocusChanged { railHasFocus = it.hasFocus },
             verticalArrangement = Arrangement.spacedBy(6.dp)
@@ -99,7 +99,7 @@ fun HomeScreen(onLogout: () -> Unit) {
                     shape = RoundedCornerShape(16.dp)
                 ) { focused ->
                     Row(Modifier.padding(horizontal = 14.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(t.icon, null, tint = if (tab == t || focused) Lavender else Muted)
+                        Icon(t.icon, null, tint = if (focused) androidx.compose.ui.graphics.Color.White else if (tab == t) Lavender else Muted)
                         Spacer(Modifier.width(12.dp))
                         Text(t.label, fontWeight = if (tab == t) FontWeight.Bold else FontWeight.Normal)
                     }
@@ -119,7 +119,6 @@ fun HomeScreen(onLogout: () -> Unit) {
     }
 }
 
-private val Color0 = androidx.compose.ui.graphics.Color(0xFF130E20)
 
 /** Shared "loading / failed / empty" placeholder. */
 @Composable

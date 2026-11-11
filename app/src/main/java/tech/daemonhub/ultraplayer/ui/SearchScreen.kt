@@ -104,7 +104,7 @@ fun SearchScreen() {
                         Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
                             AsyncImage(
                                 res.icon, null, contentScale = ContentScale.Fit,
-                                modifier = Modifier.size(width = 48.dp, height = 48.dp).clip(RoundedCornerShape(6.dp)).background(Color(0xFF221B33))
+                                modifier = Modifier.size(width = 48.dp, height = 48.dp).clip(RoundedCornerShape(6.dp)).background(Tile)
                             )
                             Spacer(Modifier.width(12.dp))
                             Text(res.name, maxLines = 1, overflow = TextOverflow.Ellipsis)

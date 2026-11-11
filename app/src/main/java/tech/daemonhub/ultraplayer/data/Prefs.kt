@@ -70,6 +70,11 @@ object Prefs {
             .map { it.removePrefix("$kind:") }
             .toSet()
 
+    // ---------- theme ----------
+    var themeId: String?
+        get() = main.getString("theme", null)
+        set(v) { main.edit().putString("theme", v).apply() }
+
     // ---------- last channel ----------
     var lastLiveCategory: String?
         get() = main.getString("last_live_cat", null)
